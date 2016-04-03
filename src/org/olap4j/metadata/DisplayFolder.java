@@ -18,16 +18,30 @@
 package org.olap4j.metadata;
 
 /**
- * @author Joe Barefoot <joe.barefoot@atscale.com>
+ * Element that has a display folder.
  *
- * @deprecated In olap4j 2.0, getDisplayFolder() will be on the Measure and Hierarchy interfaces
+ * @author Joe Barefoot
+ *
+ * @deprecated In olap4j 2.0, getDisplayFolder() will be on the Measure and
+ * Hierarchy interfaces
  */
+@Deprecated // to be removed before 2.0
 public interface DisplayFolder {
   /**
-   *  Returns the display folder for this Measure.
+   * Returns the path to be used when displaying this element in the
+   * user interface.
    *
-   * @return display folder for this Measure
+   * <p>Folder names are separated by a semicolon (;). Nested folders
+   * are indicated by a backslash (\).
+   *
+   * <p>The element is typically a measure or hierarchy. For instance,
+   * when a cube has many measures, you can use display folders to
+   * categorize the measures and improve the user browsing experience.
+   *
+   * @return display folder for this Measure or Hierarchy
    */
   String getDisplayFolder();
 
 }
+
+// End DisplayFolder.java
