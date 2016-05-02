@@ -528,6 +528,8 @@ public enum RowsetDefinition implements XmlaConstant {
     public transient final List<Column> columns;
     public transient final List<Column> sortColumns;
     public transient final List<Column> restrictionColumns;
+    private transient final Map<String, Column> columnMap =
+        new HashMap<String, Column>();
 
     private final int xmlaOrdinal;
     private final String description;
@@ -543,15 +545,33 @@ public enum RowsetDefinition implements XmlaConstant {
         this.columns = entity.columns();
         this.sortColumns = entity.sortColumns();
         this.restrictionColumns = entity.restrictionColumns();
-    }
-
-    public Column lookupColumn(String name) {
-        for (Column columnDefinition : columns) {
-            if (columnDefinition.name.equals(name)) {
-                return columnDefinition;
+        for (Column column : columns) {
+            columnMap.put(column.name, column);
+        }
+        for (Column column : restrictionColumns) {
+            if (columnMap.containsKey(column.name)) {
+                assert columnMap.get(column.name) == column;
+            } else {
+                columnMap.put(column.name, column);
             }
         }
-        return null;
+        for (Column sortColumn : sortColumns) {
+            Column column = columnMap.get(sortColumn.name);
+            assert column == sortColumn;
+        }
+    }
+
+    /** Finds a column with a given name, case-sensitive, or returns null.
+     *
+     * <p>Looks in both regular output columns and restriction columns, since
+     * some columns are restrictions but are not output ("TREE_OP" is an example
+     * of this) may be a restriction
+     *
+     * @param name Column name
+     * @return Column definition, or null
+     */
+    public Column lookupColumn(String name) {
+        return columnMap.get(name);
     }
 
     public String xmlaName() {
